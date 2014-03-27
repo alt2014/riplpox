@@ -72,13 +72,13 @@ class Switch (object):
     msg.actions.append(of.ofp_action_output(port = outport))
     self.connection.send(msg)
 
-  def send_packet_bufid(self, outport, buffer_id = -1):
+  def send_packet_bufid(self, outport, buffer_id = None):
     msg = of.ofp_packet_out(in_port=of.OFPP_NONE)
     msg.actions.append(of.ofp_action_output(port = outport))
     msg.buffer_id = buffer_id
     self.connection.send(msg)
 
-  def install(self, port, match, buf = -1, idle_timeout = 0, hard_timeout = 0,
+  def install(self, port, match, buf = None, idle_timeout = 0, hard_timeout = 0,
               priority = of.OFP_DEFAULT_PRIORITY):
     msg = of.ofp_flow_mod()
     msg.match = match
@@ -89,7 +89,7 @@ class Switch (object):
     msg.buffer_id = buf
     self.connection.send(msg)
 
-  def install_multiple(self, actions, match, buf = -1, idle_timeout = 0,
+  def install_multiple(self, actions, match, buf = None, idle_timeout = 0,
                        hard_timeout = 0, priority = of.OFP_DEFAULT_PRIORITY):
     msg = of.ofp_flow_mod()
     msg.match = match
@@ -220,7 +220,7 @@ class RipLController(object):
         #  self.switches[sw].send_packet_bufid(port, event.ofp.buffer_id)
         #else:
         self.switches[sw].send_packet_data(port, event.data)
-        #  buffer_id = -1
+        #  buffer_id = None
 
   def _handle_packet_reactive(self, event):
     packet = event.parsed
