@@ -248,7 +248,7 @@ class RipLController(object):
   def _handle_packet_proactive(self, event):
     packet = event.parse()
 
-    if packet.dst.isMulticast():
+    if packet.dst.is_multicast:
       self._flood(event)
     else:
       hosts = self._raw_dpids(self.t.layer_nodes(self.t.LAYER_HOST))
