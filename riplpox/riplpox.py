@@ -180,8 +180,8 @@ class RipLController(object):
 
     # Form OF match
     match = of.ofp_match()
-    match.dl_src = EthAddr(src).toRaw()
-    match.dl_dst = EthAddr(dst).toRaw()
+    match.dl_src = EthAddr(src)
+    match.dl_dst = EthAddr(dst)
 
     dst_host_name = self.t.id_gen(dpid = dst).name_str()
     final_out_port, ignore = self.t.port(route[-1], dst_host_name)
