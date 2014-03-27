@@ -39,7 +39,7 @@ PRIO_HYBRID_VLAN_UP = 10
 
 
 # Borrowed from pox/forwarding/l2_multi
-class Switch (EventMixin):
+class Switch (object):
   def __init__ (self):
     self.connection = None
     self.ports = None
@@ -65,7 +65,7 @@ class Switch (EventMixin):
     self.disconnect()
     log.debug("Connect %s" % (connection,))
     self.connection = connection
-    self._listeners = self.listenTo(connection)
+    self._listeners = connection.addListeners(self)
 
   def send_packet_data(self, outport, data = None):
     msg = of.ofp_packet_out(in_port=of.OFPP_NONE, data = data)
@@ -109,7 +109,7 @@ class Switch (EventMixin):
 def sep():
   log.info("************************************************")
 
-class RipLController(EventMixin):
+class RipLController(object):
 
   def __init__ (self, t, r, mode):
     self.switches = {}  # Switches seen: [dpid] -> Switch
@@ -120,7 +120,7 @@ class RipLController(EventMixin):
 
     # TODO: generalize all_switches_up to a more general state machine.
     self.all_switches_up = False  # Sequences event handling.
-    self.listenTo(core.openflow, priority=0)
+    core.openflow.addListeners(self, priority=0)
 
   def _raw_dpids(self, arr):
     "Convert a list of name strings (from Topo object) to numbers."
