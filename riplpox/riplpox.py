@@ -159,13 +159,16 @@ class RipLController(object):
       self.switches[node_dpid].install(out_port, match, idle_timeout =
                                        IDLE_TIMEOUT)
 
+  def _eth_to_int(self, eth):
+    return sum(([ord(x)*2**((5-i)*8) for i,x in enumerate(eth.raw)]))
+
   def _src_dst_hash(self, src_dpid, dst_dpid):
     "Return a hash based on src and dst dpids."
     return crc32(pack('QQ', src_dpid, dst_dpid))
 
   def _install_proactive_path(self, src, dst):
     """Install entries on route between two hosts based on MAC addrs.
-    
+
     src and dst are unsigned ints.
     """
     src_sw = self.t.up_nodes(self.t.id_gen(dpid = src).name_str())
@@ -252,9 +255,9 @@ class RipLController(object):
       self._flood(event)
     else:
       hosts = self._raw_dpids(self.t.layer_nodes(self.t.LAYER_HOST))
-      if packet.src.toInt() not in hosts:
+      if self._eth_to_int(packet.src) not in hosts:
         raise Exception("unrecognized src: %s" % packet.src)
-      if packet.dst.toInt() not in hosts:
+      if self._eth_to_int(packet.dst) not in hosts:
         raise Exception("unrecognized dst: %s" % packet.dst)
       raise Exception("known host MACs but entries weren't pushed down?!?")
 
