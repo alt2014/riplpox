@@ -504,7 +504,11 @@ class RipLController(EventMixin):
 
 def launch(topo = None, routing = None, mode = None):
   """
-  Args in format toponame,arg1,arg2,...
+  Launch RipL-POX
+
+  topo is in format toponame,arg1,arg2,...
+  routing is a routing type (e.g., st, random, hashed)
+  mode is a controller mode (e.g., proactive, reactive, hybrid)
   """
   if not mode:
     mode = DEF_MODE
