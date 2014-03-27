@@ -266,9 +266,9 @@ class RipLController(object):
   def _install_hybrid_dynamic_flows(self, event, out_dpid, final_out_port, packet):
     "Install entry at ingress switch."
     in_name = self.t.id_gen(dpid = event.dpid).name_str()
-    #log.info("in_name: %s" % in_name) 
+    #log.info("in_name: %s" % in_name)
     out_name = self.t.id_gen(dpid = out_dpid).name_str()
-    #log.info("out_name: %s" % out_name) 
+    #log.info("out_name: %s" % out_name)
     hash_ = self._ecmp_hash(packet)
     src_dst_route = self.r.get_route(in_name, out_name, hash_)
     # Choose a random core switch.
@@ -277,7 +277,7 @@ class RipLController(object):
     core_sw_id = self.t.id_gen(dpid = core_sw)
     core_sw_name = self.t.id_gen(dpid = core_sw).name_str()
 
-    route = self.r.get_route(in_name, core_sw_name, None)    
+    route = self.r.get_route(in_name, core_sw_name, None)
     assert len(route) == 3
     log.info("route: %s" % route)
 
@@ -288,10 +288,10 @@ class RipLController(object):
     #log.info("core_sw_index: %s" % core_sw_index)
 
     dst_host_index = self.dpid_port_to_host_index(out_dpid, final_out_port)
-    #log.info("dst_host_index: %s" % dst_host_index) 
+    #log.info("dst_host_index: %s" % dst_host_index)
 
     vlan = (dst_host_index << 2) + core_sw_index
-    log.info("vlan: %s" % vlan) 
+    log.info("vlan: %s" % vlan)
     log.info("len(src_dst_route): %i" % len(src_dst_route))
 
     if len(src_dst_route) == 1:
@@ -300,7 +300,7 @@ class RipLController(object):
                (match.dl_src, match.dl_dst, in_name))
       self.switches[event.dpid].install(final_out_port, match, idle_timeout =
                                      HYBRID_IDLE_TIMEOUT,
-                                     priority = PRIO_HYBRID_FLOW_DOWN)      
+                                     priority = PRIO_HYBRID_FLOW_DOWN)
     else:
       # Write VLAN and send up
       src_port, dst_port = self.t.port(route[0], route[1])
@@ -325,7 +325,7 @@ class RipLController(object):
     # Insert flow, deliver packet directly to destination.
     if packet.dst in self.macTable:
       out_dpid, out_port = self.macTable[packet.dst]
-      log.info("found %s on dpid %s, port %s" % (packet.dst, out_dpid, out_port))      
+      log.info("found %s on dpid %s, port %s" % (packet.dst, out_dpid, out_port))
       self._install_hybrid_dynamic_flows(event, out_dpid, out_port, packet)
 
       #log.info("sending to entry in mactable: %s %s" % (out_dpid, out_port))
@@ -441,7 +441,7 @@ class RipLController(object):
 #          edge_port, agg_port = self.t.port(edge_sw_name, agg_sw_name)
 #          log.info("adding entry from %s to %s via VLAN %i and port %i" %
 #                   (edge_sw_name, agg_sw_name, match.dl_vlan, edge_port))
-#          self.switches[edge_sw].install(edge_port, match, 
+#          self.switches[edge_sw].install(edge_port, match,
 #                                         priority = PRIO_HYBRID_VLAN_UP)
 
     # Add one flow entry for each agg switch pointing up
@@ -456,15 +456,15 @@ class RipLController(object):
         if agg_sw_name in self.t.g[core_sw_name]:
             # If connected, add entry.
             agg_port, core_port = self.t.port(agg_sw_name, core_sw_name)
-            
+
             # Form OF match
             match = of.ofp_match()
             # Highest-order four bits are host index
-    
+
             # Lowest-order two bits are core switch ID
             core_sw_id = self.t.id_gen(dpid = core_sw)
             core_index = (core_sw_id.sw - 1) * 2 + (core_sw_id.host - 1)
-    
+
             for host_index in range((self.t.k ** 3) / 4):
               match.dl_vlan = (host_index << 2) + core_index
               #log.info("vlan: %s" % match.dl_vlan)
@@ -473,7 +473,7 @@ class RipLController(object):
                        (agg_sw_name, core_sw_name, match.dl_vlan, agg_port))
               self.switches[agg_sw].install(agg_port, match,
                                              priority = PRIO_HYBRID_VLAN_UP)
-      
+
 
   def _handle_ConnectionUp (self, event):
     sw = self.switches.get(event.dpid)
