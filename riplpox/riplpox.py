@@ -162,6 +162,9 @@ class RipLController(object):
   def _eth_to_int(self, eth):
     return sum(([ord(x)*2**((5-i)*8) for i,x in enumerate(eth.raw)]))
 
+  def _int_to_eth(self, inteth):
+    return EthAddr("%012x" % (inteth,))
+
   def _src_dst_hash(self, src_dpid, dst_dpid):
     "Return a hash based on src and dst dpids."
     return crc32(pack('QQ', src_dpid, dst_dpid))
@@ -183,8 +186,8 @@ class RipLController(object):
 
     # Form OF match
     match = of.ofp_match()
-    match.dl_src = EthAddr(src)
-    match.dl_dst = EthAddr(dst)
+    match.dl_src = self._int_to_eth(src)
+    match.dl_dst = self._int_to_eth(dst)
 
     dst_host_name = self.t.id_gen(dpid = dst).name_str()
     final_out_port, ignore = self.t.port(route[-1], dst_host_name)
