@@ -146,7 +146,7 @@ class RipLController(object):
     in_name = self.t.id_gen(dpid = event.dpid).name_str()
     out_name = self.t.id_gen(dpid = out_dpid).name_str()
     hash_ = self._ecmp_hash(packet)
-    route = self.r.get_route(in_name, out_name, hash_)
+    route = self.r.get_route(in_name, out_name, hash_, False)
     log.info("route: %s" % route)
     match = of.ofp_match.from_packet(packet)
     for i, node in enumerate(route):
@@ -181,7 +181,7 @@ class RipLController(object):
     assert len(dst_sw) == 1
     dst_sw_name = dst_sw[0]
     hash_ = self._src_dst_hash(src, dst)
-    route = self.r.get_route(src_sw_name, dst_sw_name, hash_)
+    route = self.r.get_route(src_sw_name, dst_sw_name, hash_, False)
     log.info("route: %s" % route)
 
     # Form OF match
@@ -276,14 +276,14 @@ class RipLController(object):
     out_name = self.t.id_gen(dpid = out_dpid).name_str()
     #log.info("out_name: %s" % out_name)
     hash_ = self._ecmp_hash(packet)
-    src_dst_route = self.r.get_route(in_name, out_name, hash_)
+    src_dst_route = self.r.get_route(in_name, out_name, hash_, False)
     # Choose a random core switch.
     core_sws = sorted(self._raw_dpids(self.t.layer_nodes(self.t.LAYER_CORE)))
     core_sw = random.choice(core_sws)
     core_sw_id = self.t.id_gen(dpid = core_sw)
     core_sw_name = self.t.id_gen(dpid = core_sw).name_str()
 
-    route = self.r.get_route(in_name, core_sw_name, None)
+    route = self.r.get_route(in_name, core_sw_name, None, False)
     assert len(route) == 3
     log.info("route: %s" % route)
 
@@ -376,7 +376,7 @@ class RipLController(object):
       for core_sw in core_sws:
         core_sw_name = self.t.id_gen(dpid = core_sw).name_str()
         log.info("for core switch  %i (%s)" % (core_sw, core_sw_name))
-        route = self.r.get_route(host_name, core_sw_name, None)
+        route = self.r.get_route(host_name, core_sw_name, None, False)
         assert route[0] == host_name
         assert route[-1] == core_sw_name
         # Form OF match
